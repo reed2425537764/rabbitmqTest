@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <!--加载配置文件-->
+    <context:property-placeholder location="rabbitmq.properties"/>
+
+    <rabbit:connection-factory id="connectionFactory" host="${rabbitmq.host}" port="${rabbitmq.port}"
+                               username="${rabbitmq.username}" password="${rabbitmq.password}"
+                               virtual-host="${rabbitmq.virtual}"/>
+
+    <!--    定义管理交换机、队列-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!--    ==================配置生产者==================-->
+    <!--    定义队列-->
+    <rabbit:queue id="queue1" auto-declare="true" durable="false" auto-delete="false" name="queue1"/>
+    <rabbit:queue id="queue2" auto-declare="true" durable="false" auto-delete="false" name="queue2"/>
+
+    <!--    定义交换机 并绑定队列-->
+    <rabbit:direct-exchange name="test.direct" auto-declare="true" id="routing_key_exchange" durable="false"
+                            auto-delete="false">
+        <rabbit:bindings>
+            <rabbit:binding queue="queue1" key="key1"/>
+            <rabbit:binding queue="queue2" key="key2"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory"/>
+
+    <!--    ==================配置消费者==================-->
+    <bean id="rec1" class="cn.case1.Rec1"/>
+    <bean id="rec2" class="cn.case1.Rec2"/>
+    <rabbit:listener-container connection-factory="connectionFactory" auto-declare="false">
+        <!--方法一-->
+<!--        <rabbit:listener ref="rec1" queue-names="queue1" method="rec1"/>-->
+        <!--方法一-->
+        <rabbit:listener ref="rec2" queue-names="queue1"/>
+    </rabbit:listener-container>
+
+    <!--配置包扫描-->
+    <context:component-scan base-package="cn.case1"/>
+</beans>

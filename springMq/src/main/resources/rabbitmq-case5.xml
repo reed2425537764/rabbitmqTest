@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <!--加载配置文件-->
+    <context:property-placeholder location="rabbitmq.properties"/>
+
+    <rabbit:connection-factory id="connectionFactory" host="${rabbitmq.host}" port="${rabbitmq.port}"
+                               username="${rabbitmq.username}" password="${rabbitmq.password}"
+                               virtual-host="${rabbitmq.virtual}"
+    />
+
+    <!--    定义管理交换机、队列-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!--    ==================配置生产者==================-->
+    <!--    定义队列-->
+    <rabbit:queue id="queue3" auto-declare="true" durable="false" auto-delete="false" name="queue3">
+        <rabbit:queue-arguments>
+            <!--<entry key="x-message-ttl" value="10000" value-type="java.lang.Integer"/>-->
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory"/>
+
+    <!--    定义交换机 并绑定队列-->
+    <rabbit:direct-exchange name="test.direct" auto-declare="true" id="routing_key_exchange" durable="false"
+                            auto-delete="false">
+        <rabbit:bindings>
+            <rabbit:binding queue="queue3" key="key3"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!--配置包扫描-->
+    <context:component-scan base-package="cn.case5"/>
+</beans>
