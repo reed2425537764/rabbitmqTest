@@ -1,9 +1,12 @@
 package cn.case1;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -12,7 +15,11 @@ import java.util.concurrent.TimeUnit;
  */
 @SpringBootApplication
 public class BootApplication1 {
+
+    private static final Logger logger = LoggerFactory.getLogger(BootApplication1.class);
+
     public static void main(String[] args) {
+        logger.debug("rabbitMqTest with springboot starting at {}", LocalDateTime.now());
         SpringApplication springApplication = new SpringApplication(BootApplication1.class);
         ConfigurableApplicationContext applicationContext = springApplication.run(args);
 
