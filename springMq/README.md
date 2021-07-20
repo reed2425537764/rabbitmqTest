@@ -3,3 +3,5 @@
 20201107 case3 消息可靠投递(consumer ack机制)  queue到消费者的可靠确认
 20201107 case4 consumer 限流机制    限制consumer缓存消息的数量
 20201108 case5 TTL 消息过期设置 队列过期设置
+20211121 case6 死信队列
+20210129 case7 more basis

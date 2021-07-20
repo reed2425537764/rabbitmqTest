@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <context:component-scan base-package="cn.case7"/>
+
+    <rabbit:connection-factory id="connectionFactory" host="${rabbitmq.host}" port="${rabbitmq.port}"
+                               username="${rabbitmq.username}" password="${rabbitmq.password}"
+                               virtual-host="${rabbitmq.virtual}"
+                               publisher-confirms="true"
+                               publisher-returns="true"/>
+
+    <!-- 定义admin,producer中的exchange,queue会自动的利用该admin自动在spring中生成 -->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <rabbit:queue id="queue1" auto-declare="true" durable="false" auto-delete="false" name="queue1"/>
+
+    <!-- 定义rabbitmq模板，指定连接工厂、exchange、queue等 -->
+    <rabbit:template connection-factory="connectionFactory" exchange="amq.direct" queue="queue1"/>
+
+<!--    find more on https://blog.csdn.net/chenshourui/article/details/81985557    -->
+</beans>
